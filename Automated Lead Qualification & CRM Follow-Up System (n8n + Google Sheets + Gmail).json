@@ -1,0 +1,554 @@
+{
+  "name": "Automated Lead Qualification & CRM Follow-Up System (n8n + Google Sheets + Gmail)",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact Us",
+        "formDescription": "Get a quote now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "John Doe",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Service",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "SEO"
+                  },
+                  {
+                    "option": "Ads"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Budget",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -896,
+        16
+      ],
+      "id": "9cc13f88-a49b-4b10-b004-49e58c70d7e3",
+      "name": "On form submission",
+      "webhookId": "61d51f55-749c-4ae0-a91f-18181069afc9"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc",
+          "mode": "list",
+          "cachedResultName": "n8n New Lead Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json['Full Name'] }}",
+            "Email": "={{ $json.Email }}",
+            "Service": "={{ $json.Service }}",
+            "Budget": "={{ $json.Budget }}",
+            "Date": "={{ $today }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rejected",
+              "displayName": "Rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contacted",
+              "displayName": "Contacted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -688,
+        16
+      ],
+      "id": "82b1a679-e9d9-4dca-a63d-85edc7ff6e25",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rRZ3CJHX7oZ1A57G",
+          "name": "For Automation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04863efb-4d5b-4934-8ef6-1e0a2b96094f",
+              "leftValue": "={{ $('On form submission').item.json.Budget }}",
+              "rightValue": 1000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        16
+      ],
+      "id": "7e05f1f5-3e3e-476e-8f9c-39bf153b7426",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "sendTo": "sohaggain650@gmail.com",
+        "subject": "🔔 New Lead",
+        "emailType": "text",
+        "message": "=🔔 New Lead\nName: {{ $json['Full Name'] }}\nEmail: {{ $json.Email }}\nService: {{ $json.Service }}\nBudget: {{ $json.Budget }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        16
+      ],
+      "id": "7e07c30c-48ee-46d7-b6f3-1cead46961e5",
+      "name": "Send a message",
+      "webhookId": "c0e281c2-7fbe-4e31-acd7-0e558714ac58",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "23750576-cb4f-49b0-8abc-cb9281b5693a",
+              "leftValue": "={{ $('On form submission').item.json.Service }}",
+              "rightValue": "Ads",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        16
+      ],
+      "id": "8bd758c4-d711-4f5c-87b9-f97893a4bb6e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Thanks for inquiring with Automatable!",
+        "emailType": "text",
+        "message": "=Hey {{ $('On form submission').item.json['Full Name'].split(' ')[0] }},\n\nThanks for inquiring about Ad services, I'd be happy to help...\n\n.....\n\n\nHere's a link to book a call:\ncalendly.com/appointment\n\nBest,\nSohag",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        -96
+      ],
+      "id": "0a92ce62-fdbe-4d74-93de-a52024c4ede1",
+      "name": "Send a message1",
+      "webhookId": "846116d2-4e0a-4cba-8b6a-f0a59e6c4498",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Thanks for inquiring with Automatable!",
+        "emailType": "text",
+        "message": "=Hey {{ $('On form submission').item.json['Full Name'].split(' ')[0] }},\n\nThanks for inquiring about SEO services, I'd be happy to help...\n\n.....\n\n\nHere's a link to book a call:\ncalendly.com/appointment\n\nBest,\nSohag",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        96
+      ],
+      "id": "8c043101-015a-4606-9592-f0fa35c89a78",
+      "name": "Send a message2",
+      "webhookId": "846116d2-4e0a-4cba-8b6a-f0a59e6c4498",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        16
+      ],
+      "id": "adda119a-088b-4ebd-8ba6-c68492f57336",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc",
+          "mode": "list",
+          "cachedResultName": "n8n New Lead Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12UTwkPWeD9KreykFG4XbUKJ7PNhaUTYt5PijWH86zIc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('On form submission').item.json.Email }}",
+            "Contacted": "TRUE",
+            "Rejected": "={{ $if($('On form submission').item.json.Budget >= 1000, false, true) }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rejected",
+              "displayName": "Rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contacted",
+              "displayName": "Contacted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        16
+      ],
+      "id": "f2c8219b-5a72-4400-bde9-7f427bfdc495",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rRZ3CJHX7oZ1A57G",
+          "name": "For Automation"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "012995f7-e1c6-4582-9cc9-0574ec3e5650",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f00bba974abf03cb5183d4d65f8a9645a781b04770df6a7d08284fca87d50b3"
+  },
+  "nodeGroups": [],
+  "id": "reB9oU3jLl6aHlOw",
+  "tags": []
+}
